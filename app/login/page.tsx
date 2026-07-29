@@ -36,70 +36,62 @@ export default function LoginPage() {
     });
   }
 
-  const inputStyle: React.CSSProperties = {
-    width: '100%',
-    padding: '10px 12px',
-    marginBottom: 12,
-    borderRadius: 4,
-    border: '1px solid #28406b',
-    background: '#121e35',
-    color: '#eef2f8',
-  };
-
   return (
-    <div style={{ maxWidth: 380, margin: '80px auto', padding: 24 }}>
-      <h1 style={{ fontSize: 22, marginBottom: 4 }}>Articles Builder</h1>
-      <p style={{ color: '#9fb0c8', fontSize: 13, marginBottom: 24 }}>
-        {mode === 'signin' ? 'Sign in to your dashboard' : 'Create an account'}
+    <div style={{ maxWidth: 400, margin: '110px auto', padding: '0 24px' }}>
+      <p className="eyebrow" style={{ marginBottom: 10 }}>ARTICLES BUILDER</p>
+      <h1
+        className="aurora-text"
+        style={{ fontFamily: 'var(--font-display)', fontSize: 30, margin: '0 0 6px', lineHeight: 1.15 }}
+      >
+        {mode === 'signin' ? 'Welcome back' : 'Start writing smarter'}
+      </h1>
+      <p style={{ color: 'var(--text-mid)', fontSize: 14, marginBottom: 28 }}>
+        {mode === 'signin' ? 'Sign in to your dashboard' : 'Topics in, articles out — twice a week or however often you want.'}
       </p>
 
-      <form onSubmit={handleEmailAuth}>
-        <input
-          style={inputStyle}
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          style={inputStyle}
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          minLength={6}
-        />
-        {error && <p style={{ color: '#f0a93b', fontSize: 13 }}>{error}</p>}
-        <button
-          type="submit"
-          disabled={loading}
-          style={{
-            width: '100%', padding: '10px 12px', borderRadius: 4, border: 'none',
-            background: '#f0a93b', color: '#070d1a', fontWeight: 600, cursor: 'pointer',
-          }}
-        >
-          {loading ? 'Working…' : mode === 'signin' ? 'Sign in' : 'Sign up'}
+      <div className="glass-card">
+        <form onSubmit={handleEmailAuth}>
+          <label className="field-label">Email</label>
+          <input
+            className="field-input"
+            style={{ marginBottom: 14 }}
+            type="email"
+            placeholder="you@company.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <label className="field-label">Password</label>
+          <input
+            className="field-input"
+            style={{ marginBottom: 16 }}
+            type="password"
+            placeholder="••••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            minLength={6}
+          />
+          {error && <p style={{ color: 'var(--danger)', fontSize: 13, marginBottom: 12 }}>{error}</p>}
+          <button type="submit" className="btn-primary" style={{ width: '100%' }} disabled={loading}>
+            {loading ? 'Working…' : mode === 'signin' ? 'Sign in' : 'Create account'}
+          </button>
+        </form>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '18px 0' }}>
+          <div style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+          <span style={{ fontSize: 11, color: 'var(--text-low)' }}>OR</span>
+          <div style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+        </div>
+
+        <button onClick={handleGoogleAuth} className="btn-secondary" style={{ width: '100%' }}>
+          Continue with Google
         </button>
-      </form>
+      </div>
 
-      <button
-        onClick={handleGoogleAuth}
-        style={{
-          width: '100%', padding: '10px 12px', marginTop: 12, borderRadius: 4,
-          border: '1px solid #28406b', background: 'transparent', color: '#eef2f8', cursor: 'pointer',
-        }}
-      >
-        Continue with Google
-      </button>
-
-      <p style={{ fontSize: 13, marginTop: 16, color: '#9fb0c8' }}>
+      <p style={{ fontSize: 13, marginTop: 20, color: 'var(--text-mid)', textAlign: 'center' }}>
         {mode === 'signin' ? "Don't have an account? " : 'Already have an account? '}
-        <a
-          onClick={() => setMode(mode === 'signin' ? 'signup' : 'signin')}
-          style={{ color: '#f0a93b', cursor: 'pointer' }}
-        >
+        <a onClick={() => setMode(mode === 'signin' ? 'signup' : 'signin')} style={{ cursor: 'pointer' }}>
           {mode === 'signin' ? 'Sign up' : 'Sign in'}
         </a>
       </p>
