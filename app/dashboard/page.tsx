@@ -33,6 +33,7 @@ export default function Dashboard() {
   const [saving, setSaving] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [freshId, setFreshId] = useState<string | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -80,7 +81,11 @@ export default function Dashboard() {
     const res = await fetch('/api/generate', { method: 'POST' });
     const json = await res.json();
     setGenerating(false);
-    if (json.article) setArticles((prev) => [json.article, ...prev]);
+    if (json.article) {
+      setArticles((prev) => [json.article, ...prev]);
+      setFreshId(json.article.id);
+      setTimeout(() => setFreshId(null), 4000);
+    }
   }
 
   function copyArticle(article: Article) {
@@ -90,96 +95,118 @@ export default function Dashboard() {
     setTimeout(() => setCopiedId(null), 1500);
   }
 
-  const card: React.CSSProperties = {
-    background: '#0c1526', border: '1px solid #121e35', borderRadius: 6, padding: 20, marginBottom: 16,
-  };
-  const label: React.CSSProperties = { fontSize: 12, color: '#9fb0c8', display: 'block', marginBottom: 6 };
-  const input: React.CSSProperties = {
-    width: '100%', padding: '9px 11px', borderRadius: 4, border: '1px solid #28406b',
-    background: '#121e35', color: '#eef2f8', marginBottom: 14,
-  };
-  const button: React.CSSProperties = {
-    padding: '9px 16px', borderRadius: 4, border: 'none', background: '#f0a93b',
-    color: '#070d1a', fontWeight: 600, cursor: 'pointer',
-  };
-
   return (
-    <div style={{ maxWidth: 900, margin: '0 auto', padding: '32px 20px' }}>
-      <h1 style={{ fontSize: 24, marginBottom: 24 }}>Articles Builder</h1>
+    <div style={{ maxWidth: 880, margin: '0 auto', padding: '48px 24px 80px' }}>
+      <header style={{ marginBottom: 36 }}>
+        <p className="eyebrow" style={{ marginBottom: 8 }}>YOUR WORKSPACE</p>
+        <h1
+          className="aurora-text"
+          style={{ fontFamily: 'var(--font-display)', fontSize: 32, margin: 0, lineHeight: 1.1 }}
+        >
+          Articles Builder
+        </h1>
+        <p style={{ color: 'var(--text-mid)', fontSize: 14, marginTop: 8 }}>
+          Set your topics and tone once — new articles show up here, ready to publish.
+        </p>
+      </header>
 
-      <div style={card}>
-        <h2 style={{ fontSize: 16, marginBottom: 16 }}>Your settings</h2>
+      <div className="glass-card" style={{ marginBottom: 28 }}>
+        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 17, margin: '0 0 18px' }}>Settings</h2>
 
-        <label style={label}>Topics (comma-separated)</label>
+        <label className="field-label">Topics</label>
         <input
-          style={input}
+          className="field-input"
+          style={{ marginBottom: 16 }}
           value={topicsInput}
           onChange={(e) => setTopicsInput(e.target.value)}
           placeholder="e.g. B2B SaaS growth, fintech UX, AI in music"
         />
 
-        <label style={label}>Articles per week</label>
-        <input
-          style={input}
-          type="number"
-          min={1}
-          max={7}
-          value={config.articles_per_week}
-          onChange={(e) => setConfig((c) => ({ ...c, articles_per_week: Number(e.target.value) }))}
-        />
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 4 }}>
+          <div>
+            <label className="field-label">Articles per week</label>
+            <input
+              className="field-input"
+              type="number"
+              min={1}
+              max={7}
+              value={config.articles_per_week}
+              onChange={(e) => setConfig((c) => ({ ...c, articles_per_week: Number(e.target.value) }))}
+            />
+          </div>
+          <div>
+            <label className="field-label">Platform</label>
+            <select
+              className="field-input"
+              value={config.platform}
+              onChange={(e) => setConfig((c) => ({ ...c, platform: e.target.value }))}
+            >
+              <option value="linkedin">LinkedIn</option>
+            </select>
+          </div>
+        </div>
 
-        <label style={label}>Platform</label>
-        <select
-          style={input}
-          value={config.platform}
-          onChange={(e) => setConfig((c) => ({ ...c, platform: e.target.value }))}
-        >
-          <option value="linkedin">LinkedIn</option>
-        </select>
-
-        <label style={label}>Tone file (.docx or .txt) — optional, uses a sensible default if skipped</label>
+        <label className="field-label" style={{ marginTop: 12 }}>
+          Tone file (.docx or .txt) — optional, a sensible default is used if skipped
+        </label>
         <input
-          style={input}
+          className="field-input"
+          style={{ marginBottom: 6, padding: '9px 13px' }}
           type="file"
           accept=".docx,.txt"
           onChange={(e) => e.target.files?.[0] && uploadTone(e.target.files[0])}
         />
         {config.tone_text && (
-          <p style={{ fontSize: 12, color: '#5fbf8f', marginBottom: 14 }}>
+          <p style={{ fontSize: 12, color: 'var(--success)', margin: '8px 0 4px' }}>
             Tone loaded: "{config.tone_text.slice(0, 120)}…"
           </p>
         )}
 
-        <div style={{ display: 'flex', gap: 10 }}>
-          <button style={button} onClick={saveConfig} disabled={saving}>
+        <div style={{ display: 'flex', gap: 12, marginTop: 18 }}>
+          <button className="btn-primary" onClick={saveConfig} disabled={saving}>
             {saving ? 'Saving…' : 'Save settings'}
           </button>
-          <button style={{ ...button, background: 'transparent', border: '1px solid #f0a93b', color: '#f0a93b' }}
-                  onClick={generateNow} disabled={generating}>
-            {generating ? 'Generating…' : 'Generate an article now'}
+          <button
+            className={`btn-secondary ${generating ? 'thinking' : ''}`}
+            onClick={generateNow}
+            disabled={generating}
+          >
+            {generating ? 'Researching + writing…' : 'Generate an article now'}
           </button>
         </div>
       </div>
 
-      <h2 style={{ fontSize: 16, marginBottom: 16 }}>Your articles</h2>
+      <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 17, margin: '0 0 16px' }}>Your articles</h2>
       {articles.length === 0 && (
-        <p style={{ color: '#5f7291', fontSize: 13 }}>No articles yet — save your settings and try "Generate an article now".</p>
+        <p style={{ color: 'var(--text-low)', fontSize: 13.5 }}>
+          Nothing yet — save your settings, then try "Generate an article now."
+        </p>
       )}
       {articles.map((article) => (
-        <div key={article.id} style={card}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-            <h3 style={{ fontSize: 17, margin: 0 }}>{article.title}</h3>
-            <span style={{ fontSize: 11, color: '#5f7291' }}>{new Date(article.created_at).toLocaleDateString()}</span>
+        <div
+          key={article.id}
+          className={`glass-card ${freshId === article.id ? 'fresh' : ''}`}
+          style={{ marginBottom: 18 }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 12 }}>
+            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 18, margin: 0 }}>{article.title}</h3>
+            <span className="mono" style={{ fontSize: 11, color: 'var(--text-low)', whiteSpace: 'nowrap' }}>
+              {new Date(article.created_at).toLocaleDateString()}
+            </span>
           </div>
-          <p style={{ fontSize: 11, color: '#5f7291', margin: '6px 0 12px' }}>
-            Source: {article.source_topic} — {article.source_summary}
+          <p style={{ fontSize: 11.5, color: 'var(--text-low)', margin: '8px 0 14px' }} className="mono">
+            SOURCE — {article.source_topic}: {article.source_summary}
           </p>
-          <p style={{ fontSize: 14, lineHeight: 1.6, whiteSpace: 'pre-wrap', color: '#c7d2e3' }}>{article.body}</p>
-          <p style={{ fontSize: 13, color: '#f0a93b', marginTop: 10 }}>
-            {article.hashtags.map((h) => '#' + h.replace(/^#/, '')).join(' ')}
+          <p style={{ fontSize: 14.5, lineHeight: 1.65, whiteSpace: 'pre-wrap', color: 'var(--text-hi)', opacity: 0.92 }}>
+            {article.body}
           </p>
-          <button style={{ ...button, marginTop: 10 }} onClick={() => copyArticle(article)}>
-            {copiedId === article.id ? 'Copied!' : 'Copy for LinkedIn'}
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 14 }}>
+            {article.hashtags.map((h) => (
+              <span key={h} className="pill">#{h.replace(/^#/, '')}</span>
+            ))}
+          </div>
+          <button className="btn-secondary" style={{ marginTop: 16, fontSize: 13, padding: '8px 18px' }} onClick={() => copyArticle(article)}>
+            {copiedId === article.id ? 'Copied ✓' : 'Copy for LinkedIn'}
           </button>
         </div>
       ))}
