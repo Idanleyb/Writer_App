@@ -43,15 +43,18 @@ const platformRules = (platform: string) =>
 export async function generateArticle({ topic, toneText, platform }: GenerateArgs): Promise<GeneratedArticle> {
   const tone = toneText?.trim() || DEFAULT_TONE;
 
-  const resp = await client.messages.create({
-    model: 'claude-sonnet-4-6',
-    max_tokens: 2500,
-    tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-    messages: [
-      {
-        role: 'user',
-        content: `Your job is to find and write about something specific and current related
-to exactly this topic: "${topic}".
+  const today = new Date().toISOString().slice(0, 10);
+
+  const resp = await client.messages.create(
+    {
+      model: 'claude-sonnet-4-6',
+      max_tokens: 2500,
+      tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+      messages: [
+        {
+          role: 'user',
+          content: `Today's date is ${today}. Your job is to find and write about something
+specific and current related to exactly this topic: "${topic}".
 
 STAY ON THIS TOPIC. Do not drift to a different, more generic subject just
 because it's more heavily covered online. In particular: do not write about
@@ -69,6 +72,9 @@ Process:
    coverage, refine the query and search again before writing anything.
 3. Pick ONE specific, concrete finding (a real launch, technique, or study) —
    not a generic trend statement — and write an original article about it.
+4. Pick a genuinely different specific finding each time this runs — do not
+   default to the most obvious or most-searched result if a more specific,
+   less generic one is available in your search results.
 
 TONE TO FOLLOW:
 ${tone}
@@ -93,9 +99,12 @@ After you've finished researching, respond with ONLY a JSON object on its own
   "source_topic": "the specific thing you found and wrote about, one short phrase",
   "source_summary": "one sentence on where this idea came from"
 }`,
-      },
-    ],
-  });
+        },
+      ],
+    },
+    { fetchOptions: { cache: 'no-store' } } // belt-and-suspenders: Next.js patches fetch to cache by
+                                             // default in some contexts — this rules that out entirely
+  );
 
   // Build a transparent log of what was actually searched and found, by
   // matching each server_tool_use (the query) to its following
