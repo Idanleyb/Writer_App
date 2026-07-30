@@ -190,3 +190,92 @@ html, body {
 a { color: var(--accent); }
 
 ::selection { background: var(--aurora-violet); color: white; }
+
+/* ---- Article list ---- */
+.article-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 18px;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.article-row:hover { background: var(--surface-hover); border-color: var(--border-glow); }
+.article-row-title { font-family: var(--font-display); font-size: 15.5px; font-weight: 600; margin: 0 0 4px; }
+.article-row-meta { font-family: var(--font-mono); font-size: 11px; color: var(--text-low); }
+
+/* ---- Toast ---- */
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 50;
+  padding: 14px 20px;
+  border-radius: var(--radius-sm);
+  background: rgba(20, 20, 36, 0.92);
+  border: 1px solid var(--border-glow);
+  box-shadow: 0 8px 32px -8px var(--aurora-violet);
+  backdrop-filter: blur(12px);
+  font-size: 13.5px;
+  animation: toast-in 0.25s ease-out;
+}
+@keyframes toast-in {
+  from { transform: translateY(-10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* ---- Modal ---- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: rgba(5, 5, 12, 0.72);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 48px 20px;
+  overflow-y: auto;
+}
+.modal-panel {
+  max-width: 680px;
+  width: 100%;
+  background: #10101c;
+  border: 1px solid var(--border-glow);
+  border-radius: var(--radius);
+  padding: 32px;
+  box-shadow: 0 24px 64px -16px rgba(0, 0, 0, 0.6);
+}
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  background: none;
+  border: none;
+  color: var(--text-mid);
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* ---- Search log table ---- */
+.search-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+.search-table th {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-low);
+  text-align: left;
+  padding: 6px 10px 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+.search-table td {
+  font-size: 12.5px;
+  padding: 8px 10px 8px 0;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+.search-table .query-cell { color: var(--accent); font-family: var(--font-mono); font-size: 11.5px; white-space: nowrap; }
+.search-table a { display: block; font-size: 12px; margin-bottom: 3px; text-decoration: none; }
+.search-table a:hover { text-decoration: underline; }
